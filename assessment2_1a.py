@@ -60,17 +60,6 @@ print('Labels: y_train=%s, y_test=%s' % (y_train.shape, y_test.shape))
 # Load fashion mnist dataset
 (x_train, y_train), (x_test, y_test) = fashion_mnist.load_data()
 
-# Reshaping the images
-x_train = x_train.reshape((60000, 28, 28, 1))
-x_test = x_test.reshape((10000, 28, 28, 1))
-
-# Normalizing the images
-x_train = x_train.astype('float32')/255
-x_test = x_test.astype('float32')/255
-
-y_train = to_categorical(y_train)
-y_test = to_categorical(y_test)
-
 # Defining the CNN models
 net = models.Sequential()
 net.add(Conv2D(32,kernel_size=2, activation='relu', input_shape=(28,28,1))) # Input Layer
@@ -90,10 +79,12 @@ net.compile(optimizer = 'adam', loss = 'categorical_crossentropy', metrics=['acc
 
 history = net.fit(x_train, y_train, epochs = 20, batch_size = 150, validation_split=0.2)
 
+# Evaluating model
 testing_loss, testing_accuracy = net.evaluate(x_test, y_test)
 
 print("Model accuracy: %.2f"% (testing_accuracy*100))
 
+# Loss & Accuracy plot
 plt.subplots(figsize=(15, 5))
 plt.subplot(1, 2, 1)
 plt.plot(history.history['loss'], label='Loss')
@@ -112,13 +103,16 @@ plt.ylabel('Accuracy')
 plt.legend()
 plt.show()
 
+# Assign classes
 classes = ['T-shirt/Top','Trouser','Pullover','Dress','Coat','Sandal','Shirt','Sneaker','Bag','Ankle Boot']
 
-#Create Multiclass Confusion Matrix
+# Model Prediction
 preds = net.predict(x_test)
 
+# Classification Report
 print(classification_report(np.argmax(y_test,axis=1), np.argmax(preds,axis=1), target_names= classes))
 
+# Plotting multiclass confusion matrix
 cm = confusion_matrix(np.argmax(y_test,axis=1), np.argmax(preds,axis=1))
 
 plt.figure(figsize=(8,8))
