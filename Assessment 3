@@ -237,22 +237,26 @@ tuner = RandomSearch(
     executions_per_trial=1,
     directory='my_dir1')
 
+# Summary of hyperparameter configuration
 tuner.search_space_summary()
 
-stop_early = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=5)
+# Early stopper
+stop_early = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=10)
 
+# Search for best hyperparameter configuration
 tuner.search(x_train, y_train, epochs=50, batch_size = 32, validation_split = 0.2, callbacks=[stop_early])
 
+# Print results
 tuner.results_summary()
 
+# Load the best hyperparameter
 best_hyperparameters = tuner.get_best_hyperparameters(1)[0]
 print(best_hyperparameters.values)
 
-n_best_models = tuner.get_best_models(num_models=2)
-print(n_best_models[0].summary())
-
+# Build model with best hyperparameter configurations
 model = tuner.hypermodel.build(best_hyperparameters)
 
+# Train tuned model
 history = model.fit(x_train, y_train, epochs=50, batch_size = 32, validation_split = 0.2)
 
 # Plot loss and accuracy evolution graph
@@ -315,6 +319,7 @@ plot_confusion_matrix(conf_mat=cm1,show_absolute=True,
                                 colorbar=True)
 plt.show()
 
+# Example of image prediction
 class_dict = {0:'benign',
               1:'malignant'}
 
